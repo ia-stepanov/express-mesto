@@ -21,12 +21,13 @@ const getUser = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequest('Переданы некорректные данные');
-      } else if (err.message === 'NotFound') {
-        throw new NotFound('Пользователь по указанному _id не найден');
+        next(new BadRequest('Переданы некорректные данные'));
       }
-    })
-    .catch(next);
+      if (err.message === 'NotFound') {
+        next(new NotFound('Пользователь по указанному _id не найден'));
+      }
+      next(err);
+    });
 };
 
 const createUser = (req, res, next) => {
